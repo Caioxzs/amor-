@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jardim Cósmico — Onde o Amor Floresce na Noite</title>
+  
+  <!-- Fontes Google -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       1. VARIÁVEIS, RESET E ACESSIBILIDADE
+       ========================================================================== */
+    :root {
+      --bg-top: #1a0812;
+      --bg-mid: #12050c;
+      --bg-bottom: #0a0207;
+      
+      --flower-stem: #d2a679;
+      --flower-petal: #e6b88a;
+      --flower-leaf: rgba(210, 166, 121, 0.4);
+
+      --pink-soft: #ffb3c6;
+      --pink-vibrant: #ff6f91;
+      --gold-earthy: #d4a373;
+      --pink-glow: rgba(255, 179, 198, 0.3);
+
+      --text-light: #fff0f3;
+      --text-dim: #d8b4bc;
+      
+      --font-title: 'Playfair Display', serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    @media (pointer: fine) {
+      * {
+        cursor: none !important;
+      }
+    }
+
+    a:focus-visible, button:focus-visible {
+      outline: 2px solid var(--pink-soft) !important;
+      outline-offset: 4px;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-mid) 50%, var(--bg-bottom) 100%);
+      color: var(--text-light);
+      font-family: var(--font-body);
+      overflow-x: hidden;
+      min-height: 100vh;
+      line-height: 1.7;
+    }
+
+    /* ==========================================================================
+       2. CURSOR CUSTOMIZADO E CANVAS DE PARTICULAS
+       ========================================================================== */
+    #custom-cursor {
+      position: fixed;
+      width: 14px;
+      height: 14px;
+      background: var(--pink-soft);
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 15px var(--pink-vibrant), 0 0 30px var(--pink-soft);
+      transition: transform 0.08s ease-out;
+      z-index: 9999;
+      opacity: 0.9;
+    }
+
+    @media (pointer: coarse) {
+      #custom-cursor {
+        display: none;
+      }
+    }
+
+    #particles-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ==========================================================================
+       3. CABEÇALHO / ÁUDIO
+       ========================================================================== */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 20px 30px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .audio-btn {
+      background: rgba(26, 8, 18, 0.6);
+      border: 1px solid var(--pink-soft);
+      color: var(--pink-soft);
+      padding: 10px 22px;
+      border-radius: 30px;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .audio-btn:hover {
+      background: var(--pink-vibrant);
+      color: #fff;
+      border-color: var(--pink-vibrant);
+      box-shadow: 0 0 20px var(--pink-glow);
+    }
+
+    /* ==========================================================================
+       4. HERO SECTION
+       ========================================================================== */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 100px 20px 220px 20px;
+      z-index: 2;
+    }
+
+    .hero-content {
+      max-width: 800px;
+      margin-top: -60px;
+    }
+
+    .hero-title {
+      font-family: var(--font-title);
+      font-size: clamp(3.2rem, 7.5vw, 6.5rem);
+      font-weight: 400;
+      letter-spacing: 1px;
+      background: linear-gradient(135deg, #ffffff 0%, var(--pink-soft) 50%, var(--gold-earthy) 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 20px;
+      text-shadow: 0 0 40px rgba(255, 179, 198, 0.2);
+    }
+
+    .hero-subtitle {
+      font-family: var(--font-title);
+      font-size: clamp(1.1rem, 2.2vw, 1.4rem);
+      color: var(--text-dim);
+      font-weight: 400;
+      font-style: italic;
+      line-height: 1.8;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    .hero-garden {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 380px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 8vw;
+      pointer-events: none;
+      padding: 0 4vw;
+      z-index: 3;
+    }
+
+    .interactive-flower {
+      transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      transform-origin: bottom center;
+      filter: drop-shadow(0 0 8px rgba(230, 184, 138, 0.2));
+    }
+
+    /* ==========================================================================
+       5. SEÇÃO AS FLORES DO CORAÇÃO
+       ========================================================================== */
+    .species-section {
+      position: relative;
+      padding: 120px 20px 100px;
+      max-width: 1200px;
+      margin: 0 auto;
+      z-index: 2;
+    }
+
+    .section-title {
+      font-family: var(--font-title);
+      font-size: clamp(2.2rem, 4vw, 3.2rem);
+      text-align: center;
+      margin-bottom: 15px;
+      color: var(--text-light);
+      font-weight: 400;
+    }
+
+    .section-subtitle {
+      text-align: center;
+      font-family: var(--font-title);
+      font-style: italic;
+      color: var(--text-dim);
+      font-size: 1.1rem;
+      margin-bottom: 70px;
+    }
+
+    .species-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 35px;
+    }
+
+    .species-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 179, 198, 0.1);
+      border-radius: 20px;
+      padding: 40px 30px;
+      text-align: center;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    .species-card:hover {
+      transform: translateY(-10px);
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 179, 198, 0.3);
+      box-shadow: 0 15px 35px rgba(10, 2, 7, 0.8), 0 0 25px var(--pink-glow);
+    }
+
+    .species-card svg {
+      width: 120px;
+      height: 180px;
+      margin-bottom: 25px;
+      transition: transform 0.4s ease;
+    }
+
+    .species-card:hover svg {
+      transform: scale(1.05);
+    }
+
+    .species-name {
+      font-family: var(--font-title);
+      font-size: 1.5rem;
+      margin-bottom: 12px;
+      color: var(--text-light);
+      font-weight: 400;
+    }
+
+    .species-desc {
+      font-size: 0.95rem;
+      color: var(--text-dim);
+      font-weight: 300;
+      line-height: 1.7;
+    }
+
+    /* ==========================================================================
+       6. SEÇÃO INTERATIVA PLANTE UM SENTIMENTO
+       ========================================================================== */
+    .planter-section {
+      position: relative;
+      padding: 100px 20px;
+      text-align: center;
+      z-index: 2;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .planter-btn {
+      background: linear-gradient(135deg, var(--pink-vibrant), var(--gold-earthy));
+      border: none;
+      color: #fff;
+      padding: 18px 45px;
+      font-size: 1.05rem;
+      font-family: var(--font-body);
+      font-weight: 500;
+      letter-spacing: 1px;
+      border-radius: 50px;
+      box-shadow: 0 0 25px var(--pink-glow);
+      transition: all 0.3s ease;
+      margin-bottom: 50px;
+    }
+
+    .planter-btn:hover {
+      box-shadow: 0 0 40px var(--pink-vibrant);
+      transform: scale(1.06);
+    }
+
+    .planter-area {
+      min-height: 350px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 30px;
+      flex-wrap: wrap;
+      padding: 30px;
+      border-bottom: 1px solid rgba(255, 179, 198, 0.15);
+      background: rgba(255, 255, 255, 0.01);
+      border-radius: 20px;
+    }
+
+    .sprouted-flower-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: growUp 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.27) forwards;
+      transform-origin: bottom center;
+      max-width: 140px;
+    }
+
+    .flower-phrase {
+      font-family: var(--font-title);
+      font-style: italic;
+      font-size: 0.85rem;
+      color: var(--pink-soft);
+      margin-bottom: 12px;
+      text-align: center;
+      line-height: 1.3;
+      padding: 6px 10px;
+      background: rgba(26, 8, 18, 0.75);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 179, 198, 0.25);
+      backdrop-filter: blur(4px);
+    }
+
+    @keyframes growUp {
+      0% { transform: scale(0) rotate(-12deg); opacity: 0; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    /* ==========================================================================
+       7. SCROLL REVEAL & FOOTER
+       ========================================================================== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(35px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    footer {
+      position: relative;
+      padding: 60px 20px;
+      text-align: center;
+      z-index: 2;
+      border-top: 1px solid rgba(255, 179, 198, 0.1);
+      background: rgba(10, 2, 7, 0.5);
+    }
+
+    .footer-quote {
+      font-family: var(--font-title);
+      font-style: italic;
+      color: var(--text-dim);
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto 15px auto;
+      line-height: 1.8;
+    }
+
+    .footer-sub {
+      font-size: 0.85rem;
+      color: rgba(216, 180, 188, 0.5);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal {
+        transition: none;
+        opacity: 1;
+        transform: none;
+      }
+      .interactive-flower, .species-card, .planter-btn {
+        transition: none;
+      }
+      .sprouted-flower-item {
+        animation: none;
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Elementos de apoio (Cursor e Canvas de Partículas) -->
+  <div id="custom-cursor"></div>
+  <canvas id="particles-canvas"></canvas>
+
+  <!-- Cabeçalho com Botão de Som Ambiente -->
+  <header>
+    <button class="audio-btn" id="audio-toggle" aria-label="Ligar ou desligar melodia ambiente">
+      <span id="audio-icon">✦</span> <span id="audio-text">Melodia Ambiente</span>
+    </button>
+  </header>
+
+  <!-- 1. Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">Jardim Cósmico</h1>
+      <p class="hero-subtitle">
+        "Onde cada pétala guarda um segredo, e o amor cresce mais forte na escuridão que o abraça."
+      </p>
+    </div>
+    
+    <!-- Jardim em Estilo Mínimalista (Modelo Referência) -->
+    <div class="hero-garden" aria-hidden="true">
+      <!-- Flor 1 (Alta) -->
+      <svg class="interactive-flower" width="120" height="340" viewBox="0 0 120 340">
+        <!-- Haste -->
+        <line x1="60" y1="340" x2="60" y2="70" stroke="#d2a679" stroke-width="5" stroke-linecap="round"/>
+        <!-- Folha Inferior -->
+        <path d="M60 230 Q30 220 25 200 Q45 190 60 215" fill="#d2a679" opacity="0.4"/>
+        <!-- Folha Superior -->
+        <path d="M60 160 Q90 150 95 130 Q75 120 60 145" fill="#d2a679" opacity="0.4"/>
+        <!-- Pétalas (Sobreposição Translúcida) -->
+        <g transform="translate(60, 70)" opacity="0.85">
+          <ellipse cx="0" cy="-25" rx="14" ry="26" fill="#e6b88a" opacity="0.75"/>
+          <ellipse cx="0" cy="25" rx="14" ry="26" fill="#e6b88a" opacity="0.75"/>
+          <g transform="rotate(60)">
+            <ellipse cx="0" cy="-25" rx="14" ry="26" fill="#e6b88a" opacity="0.75"/>
+            <ellipse cx="0" cy="25" rx="14" ry="26" fill="#e6b88a" opacity="0.75"/>
+          </g>
+          <g transform="rotate(120)">
+            <ellipse cx="0" cy="-25" rx="14" ry="26" fill="#e6b88a" opacity="0.75"/>
+            <ellipse cx="0" cy="25" rx="14" ry="26" fill="#e6b88a" opacity="0.75"/>
+          </g>
+        </g>
+      </svg>
+
+      <!-- Flor 2 (Média) -->
+      <svg class="interactive-flower" width="120" height="290" viewBox="0 0 120 290">
+        <!-- Haste -->
+        <line x1="60" y1="290" x2="60" y2="70" stroke="#d2a679" stroke-width="5" stroke-linecap="round"/>
+        <!-- Folha Inferior -->
+        <path d="M60 210 Q30 200 25 180 Q45 170 60 195" fill="#d2a679" opacity="0.4"/>
+        <!-- Folha Superior -->
+        <path d="M60 150 Q90 140 95 120 Q75 110 60 135" fill="#d2a679" opacity="0.4"/>
+        <!-- Pétalas -->
+        <g transform="translate(60, 70)" opacity="0.85">
+          <ellipse cx="0" cy="-25" rx="14" ry="26" fill="#e6b88a" opacity="0.75"/>
+          <ellipse cx="0" cy="25" rx="14" ry="26" fill="#e6b88a" opacity="0.75"/>
+          <g transform="rotate(60)">
+            <ellipse cx="0" cy="-25" rx="14" ry="26" fill="#e6b88a" opacity="0.75"/>
+            <ellipse cx="0" cy="25" rx="14" ry="26" fill="#e6b88a" opacity="0.75"/>
+          </g>
+          <g transform="rotate(120)">
+            <ellipse cx="0" cy="-25" rx="14" ry="26" fill="#e6b88a" opacity="0.75"/>
+            <ellipse cx="0" cy="25" rx="14" ry="26" fill="#e6b88a" opacity="0.75"/>
+          </g>
+        </g>
+      </svg>
+
+      <!-- Flor 3 (Pequena) -->
+      <svg class="interactive-flower" width="120" height="220" viewBox="0 0 120 220">
+        <!-- Haste -->
+        <line x1="60" y1="220" x2="60" y2="65" stroke="#d2a679" stroke-width="4.5" stroke-linecap="round"/>
+        <!-- Folha Inferior -->
+        <path d="M60 180 Q35 175 30 160 Q45 150 60 170" fill="#d2a679" opacity="0.4"/>
+        <!-- Folha Superior -->
+        <path d="M60 135 Q85 130 90 115 Q75 105 60 125" fill="#d2a679" opacity="0.4"/>
+        <!-- Pétalas -->
+        <g transform="translate(60, 65)" opacity="0.85">
+          <ellipse cx="0" cy="-22" rx="12" ry="23" fill="#e6b88a" opacity="0.75"/>
+          <ellipse cx="0" cy="22" rx="12" ry="23" fill="#e6b88a" opacity="0.75"/>
+          <g transform="rotate(60)">
+            <ellipse cx="0" cy="-22" rx="12" ry="23" fill="#e6b88a" opacity="0.75"/>
+            <ellipse cx="0" cy="22" rx="12" ry="23" fill="#e6b88a" opacity="0.75"/>
+          </g>
+          <g transform="rotate(120)">
+            <ellipse cx="0" cy="-22" rx="12" ry="23" fill="#e6b88a" opacity="0.75"/>
+            <ellipse cx="0" cy="22" rx="12" ry="23" fill="#e6b88a" opacity="0.75"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+  </section>
+
+  <!-- 2. Seção As Flores do Coração -->
+  <section class="species-section">
+    <h2 class="section-title reveal">As Flores do Coração</h2>
+    <p class="section-subtitle reveal">Seis promessas cultivadas sob a luz suave das estrelas</p>
+    
+    <div class="species-grid">
+      <!-- Card 1 -->
+      <div class="species-card reveal">
+        <svg viewBox="0 0 100 160" aria-hidden="true">
+          <line x1="50" y1="160" x2="50" y2="50" stroke="#d2a679" stroke-width="3.5"/>
+          <path d="M50 110 Q25 100 20 85 Q35 80 50 100" fill="#d2a679" opacity="0.4"/>
+          <g transform="translate(50, 50)" opacity="0.85">
+            <ellipse cx="0" cy="-18" rx="10" ry="18" fill="#e6b88a" opacity="0.75"/>
+            <ellipse cx="0" cy="18" rx="10" ry="18" fill="#e6b88a" opacity="0.75"/>
+            <g transform="rotate(60)">
+              <ellipse cx="0" cy="-18" rx="10" ry="18" fill="#e6b88a" opacity="0.75"/>
+              <ellipse cx="0" cy="18" rx="10" ry="18" fill="#e6b88a" opacity="0.75"/>
+            </g>
+            <g transform="rotate(120)">
+              <ellipse cx="0" cy="-18" rx="10" ry="18" fill="#e6b88a" opacity="0.75"/>
+              <ellipse cx="0" cy="18" rx="10" ry="18" fill="#e6b88a" opacity="0.75"/>
+            </g>
+          </g>
+        </svg>
+        <h3 class="species-name">Rosa do Primeiro Olhar</h3>
+        <p class="species-desc">Desbrota no milésimo de segundo em que dois caminhos se cruzam e reconhecem que pertencem ao mesmo céu.</p>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="species-card reveal">
+        <svg viewBox="0 0 100 160" aria-hidden="true">
+          <line x1="50" y1="160" x2="50" y2="50" stroke="#d2a679" stroke-width="3.5"/>
+          <path d="M50 90 Q75 80 80 65 Q65 60 50 80" fill="#d2a679" opacity="0.4"/>
+          <g transform="translate(50, 50)" opacity="0.85">
+            <ellipse cx="0" cy="-18" rx="10" ry="18" fill="#ffb3c6" opacity="0.75"/>
+            <ellipse cx="0" cy="18" rx="10" ry="18" fill="#ffb3c6" opacity="0.75"/>
+            <g transform="rotate(60)">
+              <ellipse cx="0" cy="-18" rx="10" ry="18" fill="#ffb3c6" opacity="0.75"/>
+              <ellipse cx="0" cy="18" rx="10" ry="18" fill="#ffb3c6" opacity="0.75"/>
+            </g>
+            <g transform="rotate(120)">
+              <ellipse cx="0" cy="-18" rx="10" ry="18" fill="#ffb3c6" opacity="0.75"/>
+              <ellipse cx="0" cy="18" rx="10" ry="18" fill="#ffb3c6" opacity="0.75"/>
+            </g>
+          </g>
+        </svg>
+        <h3 class="species-name">Lírio da Saudade</h3>
+        <p class="species-desc">Emite um brilho dourado e acolhedor nas noites frias, lembrando que a distância é só uma ilusão do tempo.</p>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="species-card reveal">
+        <svg viewBox="0 0 100 160" aria-hidden="true">
+          <line x1="50" y1="160" x2="50" y2="50" stroke="#d2a679" stroke-width="3.5"/>
+          <path d="M50 120 Q25 110 20 95 Q35 90 50 110" fill="#d2a679" opacity="0.4"/>
+          <path d="M50 80 Q75 70 80 55 Q65 50 50 70" fill="#d2a679" opacity="0.4"/>
+          <g transform="translate(50, 50)" opacity="0.85">
+            <ellipse cx="0" cy="-18" rx="10" ry="18" fill="#ff6f91" opacity="0.75"/>
+            <ellipse cx="0" cy="18" rx="10" ry="18" fill="#ff6f91" opacity="0.75"/>
+            <g transform="rotate(60)">
+              <ellipse cx="0" cy="-18" rx="10" ry="18" fill="#ff6f91" opacity="0.75"/>
+              <ellipse cx="0" cy="18" rx="10" ry="18" fill="#ff6f91" opacity="0.75"/>
+            </g>
+            <g transform="rotate(120)">
+              <ellipse cx="0" cy="-18" rx="10" ry="18" fill="#ff6f91" opacity="0.75"/>
+              <ellipse cx="0" cy="18" rx="10" ry="18" fill="#ff6f91" opacity="0.75"/>
+            </g>
+          </g>
+        </svg>
+        <h3 class="species-name">Peônia da Promessa</h3>
+        <p class="species-desc">Guarda em cada camada de pétalas as palavras sussurradas baixinho que o vento prometeu nunca levar.</p>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="species-card reveal">
+        <svg viewBox="0 0 100 160" aria-hidden="true">
+          <line x1="50" y1="160" x2="50" y2="50" stroke="#d2a679" stroke-width="3.5"/>
+          <path d="M50 100 Q25 90 20 75 Q35 70 50 90" fill="#d2a679" opacity="0.4"/>
+          <g transform="translate(50, 50)" opacity="0.85">
+            <ellipse cx="0" cy="-18" rx="10" ry="18" fill="#d4a373" opacity="0.75"/>
+            <ellipse cx="0" cy="18" rx="10" ry="18" fill="#d4a373" opacity="0.75"/>
+            <g transform="rotate(60)">
+              <ellipse cx="0" cy="-18" rx="10" ry="18" fill="#d4a373" opacity="0.75"/>
+              <ellipse cx="0" cy="18" rx="10" ry="18" fill="#d4a373" opacity="0.75"/>
+            </g>
+            <g transform="rotate(120)">
+              <ellipse cx="0" cy="-18" rx="10" ry="18" fill="#d4a373" opacity="0.75"/>
+              <ellipse cx="0" cy="18" rx="10" ry="18" fill="#d4a373" opacity="0.75"/>
+            </g>
+          </g>
+        </svg>
+        <h3 class="species-name">Camélia do Sim</h3>
+        <p class="species-desc">Abre-se lentamente quando a alma perde o medo do amanhã e aceita mergulhar por inteiro no sentimento.</p>
+      </div>
+
+      <!-- Card 5 -->
+      <div class="species-card reveal">
+        <svg viewBox="0 0 100 160" aria-hidden="true">
+          <line x1="50" y1="160" x2="50" y2="50" stroke="#d2a679" stroke-width="3.5"/>
+          <path d="M50 110 Q75 100 80 85 Q65 80 50 100" fill="#d2a679" opacity="0.4"/>
+          <g transform="translate(50, 50)" opacity="0.85">
+            <ellipse cx="0" cy="-18" rx="10" ry="18" fill="#fff0f3" opacity="0.75"/>
+            <ellipse cx="0" cy="18" rx="10" ry="18" fill="#fff0f3" opacity="0.75"/>
+            <g transform="rotate(60)">
+              <ellipse cx="0" cy="-18" rx="10" ry="18" fill="#fff0f3" opacity="0.75"/>
+              <ellipse cx="0" cy="18" rx="10" ry="18" fill="#fff0f3" opacity="0.75"/>
+            </g>
+            <g transform="rotate(120)">
+              <ellipse cx="0" cy="-18" rx="10" ry="18" fill="#fff0f3" opacity="0.75"/>
+              <ellipse cx="0" cy="18" rx="10" ry="18" fill="#fff0f3" opacity="0.75"/>
+            </g>
+          </g>
+        </svg>
+        <h3 class="species-name">Jasmin do Abraço</h3>
+        <p class="species-desc">Perfuma a atmosfera com uma essência que acalma a mente e faz o mundo ao redor parar de girar.</p>
+      </div>
+
+      <!-- Card 6 -->
+      <div class="species-card reveal">
+        <svg viewBox="0 0 100 160" aria-hidden="true">
+          <line x1="50" y1="160" x2="50" y2="50" stroke="#d2a679" stroke-width="3.5"/>
+          <path d="M50 120 Q25 110 20 95 Q35 90 50 110" fill="#d2a679" opacity="0.4"/>
+          <path d="M50 85 Q75 75 80 60 Q65 55 50 75" fill="#d2a679" opacity="0.4"/>
+          <g transform="translate(50, 50)" opacity="0.85">
+            <ellipse cx="0" cy="-18" rx="10" ry="18" fill="#e6b88a" opacity="0.75"/>
+            <ellipse cx="0" cy="18" rx="10" ry="18" fill="#e6b88a" opacity="0.75"/>
+            <g transform="rotate(60)">
+              <ellipse cx="0" cy="-18" rx="10" ry="18" fill="#e6b88a" opacity="0.75"/>
+              <ellipse cx="0" cy="18" rx="10" ry="18" fill="#e6b88a" opacity="0.75"/>
+            </g>
+            <g transform="rotate(120)">
+              <ellipse cx="0" cy="-18" rx="10" ry="18" fill="#e6b88a" opacity="0.75"/>
+              <ellipse cx="0" cy="18" rx="10" ry="18" fill="#e6b88a" opacity="0.75"/>
+            </g>
+          </g>
+        </svg>
+        <h3 class="species-name">Orquídea do Eterno</h3>
+        <p class="species-desc">Resistente às tempestades do tempo, ela floresce continuamente para reavivar a chama da paixão.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Seção Interativa Plante um Sentimento -->
+  <section class="planter-section reveal">
+    <h2 class="section-title">Plante um Sentimento</h2>
+    <p class="section-subtitle">Deixe brotar uma nova flor para imortalizar um desejo de amor</p>
+    <button class="planter-btn" id="plant-btn">✦ Declarar ✦</button>
+    <div class="planter-area" id="planter-area" aria-live="polite"></div>
+  </section>
+
+  <!-- 4. Footer -->
+  <footer>
+    <p class="footer-quote">"O amor não reside no tempo, mas na intensidade com que permitimos que ele floresça."</p>
+    <p class="footer-sub">Jardim Cósmico — Feito para Amar</p>
+  </footer>
+
+  <!-- ==========================================================================
+     LÓGICA JAVASCRIPT
+     ========================================================================== -->
+  <script>
+    /* A. CURSOR CUSTOMIZADO */
+    const cursor = document.getElementById('custom-cursor');
+    if (matchMedia('(pointer: fine)').matches) {
+      document.addEventListener('mousemove', (e) => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+      });
+    }
+
+    /* B. SISTEMA DE PARTICULAS */
+    const canvas = document.getElementById('particles-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    class PetalParticle {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2.5 + 1;
+        this.speedY = Math.random() * 0.3 + 0.1;
+        this.speedX = (Math.random() - 0.5) * 0.2;
+        this.alpha = Math.random() * 0.5 + 0.2;
+        this.color = Math.random() > 0.3 ? '230, 184, 138' : '255, 179, 198';
+        this.angle = Math.random() * Math.PI * 2;
+        this.spin = (Math.random() - 0.5) * 0.02;
+      }
+      update() {
+        this.y += this.speedY;
+        this.x += Math.sin(this.angle) * 0.3 + this.speedX;
+        this.angle += this.spin;
+
+        if (this.y > canvas.height + 10 || this.x < -10 || this.x > canvas.width + 10) {
+          this.y = -10;
+          this.x = Math.random() * canvas.width;
+        }
+      }
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.angle);
+        ctx.fillStyle = `rgba(${this.color}, ${this.alpha})`;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, this.size, this.size * 1.6, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    const particleCount = window.innerWidth < 768 ? 35 : 65;
+    for (let i = 0; i < particleCount; i++) {
+      particles.push(new PetalParticle());
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    /* C. INTERAÇÃO MOUSE NA HERO (INCLINAÇÃO DAS FLORES) */
+    const heroFlowers = document.querySelectorAll('.interactive-flower');
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!prefersReducedMotion) {
+      document.addEventListener('mousemove', (e) => {
+        const mouseX = e.clientX / window.innerWidth - 0.5;
+        heroFlowers.forEach((flower, index) => {
+          const factor = (index + 1) * 10;
+          flower.style.transform = `rotate(${mouseX * factor}deg)`;
+        });
+      });
+    }
+
+    /* D. PLANTADOR INTERATIVO COM FRASES DE DECLARAÇÃO */
+    const plantBtn = document.getElementById('plant-btn');
+    const planterArea = document.getElementById('planter-area');
+    const paletteColors = ['#e6b88a', '#ffb3c6', '#ff6f91', '#d4a373', '#fff0f3'];
+
+    const phrases = [
+      "Eu te amo muito",
+      "Tenho orgulho de você",
+      "Você é meu lugar seguro",
+      "Sua luz me guia na escuridão",
+      "Amo o seu sorriso",
+      "Estar com você é meu lar",
+      "Você faz tudo ter sentido",
+      "Seu abraço cura qualquer dia ruim",
+      "Eu escolho você todos os dias",
+      "O universo acertou em cheio com você"
+    ];
+
+    plantBtn.addEventListener('click', () => {
+      const color = paletteColors[Math.floor(Math.random() * paletteColors.length)];
+      const phrase = phrases[Math.floor(Math.random() * phrases.length)];
+      const height = Math.floor(Math.random() * 60) + 180;
+      
+      const flowerWrapper = document.createElement('div');
+      flowerWrapper.className = 'sprouted-flower-item';
+      
+      flowerWrapper.innerHTML = `
+        <span class="flower-phrase">"${phrase}"</span>
+        <svg width="100" height="${height}" viewBox="0 0 100 ${height}" aria-hidden="true">
+          <line x1="50" y1="${height}" x2="50" y2="45" stroke="#d2a679" stroke-width="3.5"/>
+          <path d="M50 ${height-60} Q25 ${height-70} 20 ${height-85} Q35 ${height-90} 50 ${height-70}" fill="#d2a679" opacity="0.4"/>
+          <g transform="translate(50, 45)" opacity="0.85">
+            <ellipse cx="0" cy="-16" rx="9" ry="16" fill="${color}" opacity="0.75"/>
+            <ellipse cx="0" cy="16" rx="9" ry="16" fill="${color}" opacity="0.75"/>
+            <g transform="rotate(60)">
+              <ellipse cx="0" cy="-16" rx="9" ry="16" fill="${color}" opacity="0.75"/>
+              <ellipse cx="0" cy="16" rx="9" ry="16" fill="${color}" opacity="0.75"/>
+            </g>
+            <g transform="rotate(120)">
+              <ellipse cx="0" cy="-16" rx="9" ry="16" fill="${color}" opacity="0.75"/>
+              <ellipse cx="0" cy="16" rx="9" ry="16" fill="${color}" opacity="0.75"/>
+            </g>
+          </g>
+        </svg>
+      `;
+
+      if (planterArea.children.length >= 6) {
+        planterArea.removeChild(planterArea.firstChild);
+      }
+      planterArea.appendChild(flowerWrapper);
+    });
+
+    /* E. SCROLL REVEAL */
+    const reveals = document.querySelectorAll('.reveal');
+    function checkReveal() {
+      const triggerBottom = window.innerHeight * 0.88;
+      reveals.forEach(el => {
+        const top = el.getBoundingClientRect().top;
+        if (top < triggerBottom) {
+          el.classList.add('active');
+        }
+      });
+    }
+    window.addEventListener('scroll', checkReveal);
+    checkReveal();
+
+    /* F. MELODIA AMBIENTE ROMÂNTICA (WEB AUDIO API) */
+    let audioCtx = null;
+    let isPlaying = false;
+    let mainGain = null;
+    let intervalId = null;
+
+    const audioBtn = document.getElementById('audio-toggle');
+    const audioText = document.getElementById('audio-text');
+    const noteFreqs = [220.00, 246.94, 277.18, 329.63, 369.99, 440.00, 493.88];
+
+    function toggleAudio() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContext();
+        mainGain = audioCtx.createGain();
+        mainGain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        mainGain.connect(audioCtx.destination);
+      }
+
+      if (!isPlaying) {
+        audioCtx.resume();
+        startRomanticMelody();
+        audioText.textContent = "Pausar Melodia";
+        isPlaying = true;
+      } else {
+        audioCtx.suspend();
+        audioText.textContent = "Melodia Ambiente";
+        isPlaying = false;
+        if (intervalId) clearInterval(intervalId);
+      }
+    }
+
+    function playSoftNote(freq) {
+      if (!audioCtx || audioCtx.state !== 'running') return;
+
+      const osc = audioCtx.createOscillator();
+      const noteGain = audioCtx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+      const now = audioCtx.currentTime;
+      noteGain.gain.setValueAtTime(0.001, now);
+      noteGain.gain.exponentialRampToValueAtTime(0.06, now + 1.2);
+      noteGain.gain.exponentialRampToValueAtTime(0.0001, now + 4.5);
+
+      osc.connect(noteGain);
+      noteGain.connect(mainGain);
+
+      osc.start(now);
+      osc.stop(now + 4.6);
+    }
+
+    function startRomanticMelody() {
+      playSoftNote(220.00);
+      intervalId = setInterval(() => {
+        if (isPlaying) {
+          const randomFreq = noteFreqs[Math.floor(Math.random() * noteFreqs.length)];
+          playSoftNote(randomFreq);
+        }
+      }, 2400);
+    }
+
+    audioBtn.addEventListener('click', toggleAudio);
+  </script>
+</body>
+</html>
